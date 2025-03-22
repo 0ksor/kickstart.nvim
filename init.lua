@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -154,7 +154,7 @@ vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 10
+vim.opt.scrolloff = 14
 
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 -- instead raise a dialog asking if you wish to save the current file(s)
@@ -163,10 +163,17 @@ vim.opt.confirm = true
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
+vim.keymap.set('n', '<A-j>', ':m .+1<CR>==', { noremap = true, silent = true })
+vim.keymap.set('n', '<A-k>', ':m .-2<CR>==', { noremap = true, silent = true })
 
+vim.keymap.set('n', '<A-o>', 'o<Esc>', { noremap = true, silent = true }) -- Alt + o alt satır
+vim.keymap.set('n', '<A-O>', 'O<Esc>', { noremap = true, silent = true }) -- Alt + Shift + o üst satır
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+
+-- Normal modda 's' tuşunu boş bırak
+vim.keymap.set('n', 's', '<Nop>', { desc = 'Disable s key' })
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
@@ -180,10 +187,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -252,7 +259,74 @@ require('lazy').setup({
   --            })
   --        end,
   --    }
-  --
+  {
+    'ThePrimeagen/harpoon',
+    branch = 'harpoon2',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    config = function()
+      require('harpoon').setup()
+
+      -- Harpoon keymaps
+      local harpoon = require 'harpoon'
+
+      vim.keymap.set('n', '<leader>ha', function()
+        harpoon:list():append()
+      end, { desc = '[H]arpoon [A]dd current file' })
+
+      vim.keymap.set('n', '<leader>hh', function()
+        harpoon.ui:toggle_quick_menu(harpoon:list())
+      end, { desc = '[H]arpoon [H]ome' })
+
+      vim.keymap.set('n', '<leader>h1', function()
+        harpoon:list():select(1)
+      end, { desc = '[H]arpoon [1]st file' })
+      vim.keymap.set('n', '<leader>h2', function()
+        harpoon:list():select(2)
+      end, { desc = '[H]arpoon [2]nd file' })
+      vim.keymap.set('n', '<leader>h3', function()
+        harpoon:list():select(3)
+      end, { desc = '[H]arpoon [3]rd file' })
+      vim.keymap.set('n', '<leader>h4', function()
+        harpoon:list():select(4)
+      end, { desc = '[H]arpoon [4]th file' })
+      vim.keymap.set('n', '<leader>h5', function()
+        harpoon:list():select(5)
+      end, { desc = '[H]arpoon [5]th file' })
+      vim.keymap.set('n', '<leader>h6', function()
+        harpoon:list():select(6)
+      end, { desc = '[H]arpoon [6]th file' })
+      vim.keymap.set('n', '<leader>h7', function()
+        harpoon:list():select(7)
+      end, { desc = '[H]arpoon [7]th file' })
+
+      vim.keymap.set('n', '<leader>hd1', function()
+        harpoon:list():remove_at(1)
+      end, { desc = '[H]arpoon [d]elete [1]' })
+      vim.keymap.set('n', '<leader>hd2', function()
+        harpoon:list():remove_at(2)
+      end, { desc = '[H]arpoon [d]elete [2]' })
+      vim.keymap.set('n', '<leader>hd3', function()
+        harpoon:list():remove_at(3)
+      end, { desc = '[H]arpoon [d]elete [3]' })
+      vim.keymap.set('n', '<leader>hd4', function()
+        harpoon:list():remove_at(4)
+      end, { desc = '[H]arpoon [d]elete [4]' })
+      vim.keymap.set('n', '<leader>hd5', function()
+        harpoon:list():remove_at(5)
+      end, { desc = '[H]arpoon [d]elete [5]' })
+      vim.keymap.set('n', '<leader>hd6', function()
+        harpoon:list():remove_at(6)
+      end, { desc = '[H]arpoon [d]elete [6]' })
+      vim.keymap.set('n', '<leader>hd7', function()
+        harpoon:list():remove_at(7)
+      end, { desc = '[H]arpoon [d]elete [7]' })
+
+      vim.keymap.set('n', '<leader>hD', function()
+        harpoon:list():clear()
+      end, { desc = '[H]arpoon [D]elete all files' })
+    end,
+  }, -- end of configuration
+
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`.
   --
@@ -663,7 +737,7 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
+        clangd = {},
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
@@ -989,10 +1063,11 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.neo-tree',
 
+  vim.keymap.set('n', '<leader>e', ':Neotree toggle<CR>', { noremap = true, silent = true }),
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
   --
