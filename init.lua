@@ -3,11 +3,11 @@
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
 =====================================================================
-========                                    .-----.          ========
 ========         .----------------------.   | === |          ========
 ========         |.-""""""""""""""""""-.|   |-----|          ========
 ========         ||                    ||   | === |          ========
 ========         ||   KICKSTART.NVIM   ||   |-----|          ========
+========                                    .-----.          ========
 ========         ||                    ||   | === |          ========
 ========         ||                    ||   |-----|          ========
 ========         ||:Tutor              ||   |:::::|          ========
@@ -85,10 +85,10 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
 -- Set <space> as the leader key
--- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
+-- See `:help mapleader`
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
@@ -118,6 +118,27 @@ vim.opt.showmode = false
 -- vim.schedule(function()
 -- vim.opt.clipboard = 'unnamedplus'
 -- end)
+--
+--
+--
+--
+-- hop to the preious file
+local last_file = nil
+
+vim.api.nvim_create_autocmd('BufEnter', {
+  callback = function()
+    local current = vim.api.nvim_buf_get_name(0)
+    if current ~= last_file then
+      vim.g.prev_file, last_file = last_file, current
+    end
+  end,
+})
+
+vim.keymap.set('n', '<leader>v', function()
+  if vim.g.prev_file then
+    vim.cmd('edit ' .. vim.g.prev_file)
+  end
+end, { desc = '[B]ack to previous file' })
 
 -- Enable break indent
 vim.opt.breakindent = true
@@ -167,6 +188,8 @@ vim.opt.confirm = true
 vim.keymap.set('n', '<A-j>', ':m .+1<CR>==', { noremap = true, silent = true })
 vim.keymap.set('n', '<A-k>', ':m .-2<CR>==', { noremap = true, silent = true })
 
+vim.keymap.set('n', '<C-m>', '$', { noremap = true, silent = true })
+
 vim.keymap.set('n', '<A-o>', 'o<Esc>', { noremap = true, silent = true }) -- Alt + o alt satır
 vim.keymap.set('n', '<A-O>', 'O<Esc>', { noremap = true, silent = true }) -- Alt + Shift + o üst satır
 -- Clear highlights on search when pressing <Esc> in normal mode
@@ -176,6 +199,21 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Normal modda 's' tuşunu boş bırak
 vim.keymap.set('n', 's', '<Nop>', { desc = 'Disable s key' })
 
+-- terminal açmak için
+vim.keymap.set('n', '<leader>tt', function()
+  -- dosya yolu
+  local path = vim.fn.expand '%:p:h'
+  -- tmux komutu
+  local cmd = "tmux split-window -v -l 15 'cd " .. path .. " && exec $SHELL'"
+  -- shell'e gönder
+  os.execute(cmd)
+end, { desc = 'Open tmux split in file directory' })
+
+--
+--
+--
+--
+--
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
@@ -204,10 +242,10 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
-
 -- Highlight when yanking (copying) text
 --  Try it with `yap` in normal mode
 --  See `:help vim.highlight.on_yank()`
+
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
@@ -260,13 +298,37 @@ require('lazy').setup({
   --            })
   --        end,
   --    }
+  --
+  {
+    'chentoast/marks.nvim',
+    event = 'VeryLazy',
+    opts = {},
+  },
+
+  {
+    'kawre/leetcode.nvim',
+    event = 'VeryLazy',
+    build = ':TSUpdate html',
+    dependencies = {
+      'nvim-telescope/telescope.nvim',
+      'nvim-lua/plenary.nvim',
+      'MunifTanjim/nui.nvim',
+      { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' }, -- add this line
+    },
+    opts = {},
+  },
+
+  {
+    'christoomey/vim-tmux-navigator',
+    lazy = false,
+  },
 
   {
     'ThePrimeagen/harpoon',
     branch = 'harpoon2',
     dependencies = { 'nvim-lua/plenary.nvim' },
     config = function()
-      require('harpoon').setup()
+      require('harpoon').config()
 
       -- Harpoon keymaps
       local harpoon = require 'harpoon'
@@ -328,12 +390,45 @@ require('lazy').setup({
       end, { desc = '[H]arpoon [D]elete all files' })
     end,
   }, -- end of configuration
-
+  {
+    'goolord/alpha-nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      local dashboard = require 'alpha.themes.dashboard'
+      dashboard.section.header.val = {
+        [[                               __                ]],
+        [[  ___     ___    ___   __  __ /\_\    ___ ___    ]],
+        [[ / _ `\  / __`\ / __`\/\ \/\ \\/\ \  / __` __`\  ]],
+        [[/\ \/\ \/\  __//\ \_\ \ \ \_/ |\ \ \/\ \/\ \_\ \ ]],
+        [[\ \_\ \_\ \____\ \____/\ \___/  \_\_\ \_\ \____/ ]],
+        [[ \/_/\/_/\/____/\/___/  \/__/    \/_/\/_/\/___/  ]],
+      }
+      dashboard.section.buttons.val = {
+        dashboard.button('e', 'New File', ':ene <BAR> startinsert<CR>'),
+        dashboard.button('f', 'Find File', ':Telescope find_files<CR>'),
+        dashboard.button('r', 'Recent Files', ':Telescope oldfiles<CR>'),
+        dashboard.button('s', 'Search Text', ':Telescope live_grep<CR>'),
+        dashboard.button('c', 'Config', ':e $MYVIMRC<CR>'),
+        dashboard.button('q', 'Quit', ':qa<CR>'),
+        -- Separator Line
+        {
+          type = 'text',
+          val = '──────────────────────────────',
+          opts = { position = 'center', hl = 'Comment' },
+        },
+        -- Label for the Section
+        { type = 'text', val = 'Frequently Used Files', opts = { position = 'center', hl = 'Title' } },
+        dashboard.button('0', ' SDL sources', ':e ' .. vim.fn.expand '~/Projects/SDL_project/src' .. '<CR>'),
+        dashboard.button('1', ' Python game with a actuall', ':e ' .. vim.fn.expand '~/snake-game/' .. '<CR>'),
+      }
+      require('alpha').setup(dashboard.config)
+    end,
+  },
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`.
   --
-  -- See `:help gitsigns` to understand what the configuration keys do
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
+    -- See `:help gitsigns` to understand what the configuration keys do
     'lewis6991/gitsigns.nvim',
     opts = {
       signs = {
@@ -412,7 +507,7 @@ require('lazy').setup({
         { '<leader>s', group = '[S]earch' },
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>W', group = '[W]oggle' }, -- toggle normalde ben değiştirdim
-        { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        { '<leader>H', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
     },
   },
@@ -549,7 +644,11 @@ require('lazy').setup({
       -- Automatically install LSPs and related tools to stdpath for Neovim
       -- Mason must be loaded before its dependents so we need to set it up here.
       -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
-      { 'williamboman/mason.nvim', opts = {} },
+      { 'williamboman/mason.nvim', opts = {
+        ensure_installed = {
+          'codelldb',
+        },
+      } },
       'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
@@ -839,7 +938,7 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = { 'isort', 'black' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
@@ -965,25 +1064,16 @@ require('lazy').setup({
     end,
   },
 
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+  {
     'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
+    lazy = false, -- Lazy yükleme olmadan baştan yüklenmesi
+    priority = 1000, -- Yükleme önceliği yüksek
     config = function()
-      ---@diagnostic disable-next-line: missing-fields
       require('tokyonight').setup {
-        styles = {
-          comments = { italic = false }, -- Disable italics in comments
-        },
+        style = 'night', -- Koyu versiyon ("storm" daha koyu bir seçenek)
+        transparent = true, -- Şeffaf arka plan
       }
-
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd 'colorscheme tokyonight'
     end,
   },
 
@@ -1045,6 +1135,18 @@ require('lazy').setup({
       },
       indent = { enable = true, disable = { 'ruby' } },
     },
+    textobjects = {
+      select = {
+        enable = true,
+        lookahead = true,
+        keymaps = {
+          ['af'] = '@funcion.outer',
+          ['if'] = '@function.inner',
+          ['ac'] = '@class.outer',
+          ['ic'] = '@class.inner',
+        },
+      },
+    },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
     --
@@ -1062,10 +1164,10 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug',
+  require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   -- require 'custom.plugins.vim-test',
@@ -1075,8 +1177,8 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  { import = 'custom.plugins' },
-  -- { import = 'custom.plugins.cmake' },
+  -- { import = 'custom.plugins' },
+  --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
   -- In normal mode type `<space>sh` then write `lazy.nvim-plugin`
@@ -1102,6 +1204,17 @@ require('lazy').setup({
     },
   },
 })
+-- vim.o.updatetime = 1000 -- 1 saniye (1000 ms)
 
+-- vim.api.nvim_create_autocmd('CursorHold', {
+--   callback = function()
+--     vim.lsp.buf.hover()
+--   end,
+-- })
+vim.api.nvim_set_hl(0, '@variable', { fg = '#FFD700' })
+--
+--
+--
+--
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
