@@ -217,6 +217,10 @@ end, { desc = 'Open tmux split in file directory' })
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+-- arduino keymaps
+vim.keymap.set('n', '<leader>pr', ':cd ~/ProjectArduino/test2 | Piorun<CR>', { desc = 'Arduino [P]latformIO [R]un' })
+vim.keymap.set('n', '<leader>pm', ':cd ~/ProjectArduino/test2 | Piomon<CR>', { desc = 'Arduino [P]latformIO [M]on' })
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -324,11 +328,25 @@ require('lazy').setup({
   },
 
   {
+    'anurag3301/nvim-platformio.lua',
+    dependencies = {
+      { 'akinsho/nvim-toggleterm.lua' },
+      { 'nvim-telescope/telescope.nvim' },
+      { 'nvim-lua/plenary.nvim' },
+    },
+    config = function()
+      require('platformio').setup {
+        lsp = 'clang',
+      }
+    end,
+  },
+
+  {
     'ThePrimeagen/harpoon',
     branch = 'harpoon2',
     dependencies = { 'nvim-lua/plenary.nvim' },
     config = function()
-      require('harpoon').config()
+      require('harpoon').setup()
 
       -- Harpoon keymaps
       local harpoon = require 'harpoon'
@@ -420,6 +438,7 @@ require('lazy').setup({
         { type = 'text', val = 'Frequently Used Files', opts = { position = 'center', hl = 'Title' } },
         dashboard.button('0', ' SDL sources', ':e ' .. vim.fn.expand '~/Projects/SDL_project/src' .. '<CR>'),
         dashboard.button('1', ' Python game with a actuall', ':e ' .. vim.fn.expand '~/snake-game/' .. '<CR>'),
+        dashboard.button('2', ' Arduino', ':e ' .. vim.fn.expand '~/ProjectArduino/test2/src/main.cpp' .. '<CR>'),
       }
       require('alpha').setup(dashboard.config)
     end,
@@ -1212,6 +1231,7 @@ require('lazy').setup({
 --   end,
 -- })
 vim.api.nvim_set_hl(0, '@variable', { fg = '#FFD700' })
+
 --
 --
 --
