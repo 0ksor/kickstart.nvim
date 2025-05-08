@@ -1,6 +1,7 @@
 --[[
 
 =====================================================================
+
 ==================== READ THIS BEFORE CONTINUING ====================
 =====================================================================
 ========         .----------------------.   | === |          ========
@@ -102,6 +103,9 @@ vim.g.have_nerd_font = true
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
+--
+--
+--
 vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
@@ -189,6 +193,7 @@ vim.keymap.set('n', '<A-j>', ':m .+1<CR>==', { noremap = true, silent = true })
 vim.keymap.set('n', '<A-k>', ':m .-2<CR>==', { noremap = true, silent = true })
 
 vim.keymap.set('n', '<C-m>', '$', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-m>', '<Esc>A', { noremap = true, silent = true })
 
 vim.keymap.set('n', '<A-o>', 'o<Esc>', { noremap = true, silent = true }) -- Alt + o alt satır
 vim.keymap.set('n', '<A-O>', 'O<Esc>', { noremap = true, silent = true }) -- Alt + Shift + o üst satır
@@ -218,8 +223,39 @@ end, { desc = 'Open tmux split in file directory' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- arduino keymaps
-vim.keymap.set('n', '<leader>pr', ':cd ~/ProjectArduino/test2 | Piorun<CR>', { desc = 'Arduino [P]latformIO [R]un' })
-vim.keymap.set('n', '<leader>pm', ':cd ~/ProjectArduino/test2 | Piomon<CR>', { desc = 'Arduino [P]latformIO [M]on' })
+-- platformio.ini dosyasını yukarı doğru arar
+local function find_pio_root(start_path)
+  local path = vim.fn.fnamemodify(start_path or vim.fn.expand '%:p', ':p')
+  while path ~= '/' do
+    if vim.fn.filereadable(path .. '/platformio.ini') == 1 then
+      return path
+    end
+    path = vim.fn.fnamemodify(path, ':h')
+  end
+  return nil
+end
+
+-- Piorun için keymap
+vim.keymap.set('n', '<leader>pr', function()
+  local root = find_pio_root()
+  if root then
+    vim.cmd('cd ' .. root)
+    vim.cmd 'Piorun'
+  else
+    vim.notify('platformio.ini not found!', vim.log.levels.ERROR)
+  end
+end, { desc = 'Arduino [P]latformIO [R]un' })
+
+-- Piomon için keymap
+vim.keymap.set('n', '<leader>pm', function()
+  local root = find_pio_root()
+  if root then
+    vim.cmd('cd ' .. root)
+    vim.cmd 'Piomon'
+  else
+    vim.notify('platformio.ini not found!', vim.log.levels.ERROR)
+  end
+end, { desc = 'Arduino [P]latformIO [M]on' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -344,70 +380,18 @@ require('lazy').setup({
   {
     'ThePrimeagen/harpoon',
     branch = 'harpoon2',
-    dependencies = { 'nvim-lua/plenary.nvim' },
     config = function()
-      require('harpoon').setup()
-
-      -- Harpoon keymaps
-      local harpoon = require 'harpoon'
-
-      vim.keymap.set('n', '<leader>ha', function()
-        harpoon:list():append()
-      end, { desc = '[H]arpoon [A]dd current file' })
-
-      vim.keymap.set('n', '<leader>hh', function()
-        harpoon.ui:toggle_quick_menu(harpoon:list())
-      end, { desc = '[H]arpoon [H]ome' })
-
-      vim.keymap.set('n', '<leader>h1', function()
-        harpoon:list():select(1)
-      end, { desc = '[H]arpoon [1]st file' })
-      vim.keymap.set('n', '<leader>h2', function()
-        harpoon:list():select(2)
-      end, { desc = '[H]arpoon [2]nd file' })
-      vim.keymap.set('n', '<leader>h3', function()
-        harpoon:list():select(3)
-      end, { desc = '[H]arpoon [3]rd file' })
-      vim.keymap.set('n', '<leader>h4', function()
-        harpoon:list():select(4)
-      end, { desc = '[H]arpoon [4]th file' })
-      vim.keymap.set('n', '<leader>h5', function()
-        harpoon:list():select(5)
-      end, { desc = '[H]arpoon [5]th file' })
-      vim.keymap.set('n', '<leader>h6', function()
-        harpoon:list():select(6)
-      end, { desc = '[H]arpoon [6]th file' })
-      vim.keymap.set('n', '<leader>h7', function()
-        harpoon:list():select(7)
-      end, { desc = '[H]arpoon [7]th file' })
-
-      vim.keymap.set('n', '<leader>hd1', function()
-        harpoon:list():remove_at(1)
-      end, { desc = '[H]arpoon [d]elete [1]' })
-      vim.keymap.set('n', '<leader>hd2', function()
-        harpoon:list():remove_at(2)
-      end, { desc = '[H]arpoon [d]elete [2]' })
-      vim.keymap.set('n', '<leader>hd3', function()
-        harpoon:list():remove_at(3)
-      end, { desc = '[H]arpoon [d]elete [3]' })
-      vim.keymap.set('n', '<leader>hd4', function()
-        harpoon:list():remove_at(4)
-      end, { desc = '[H]arpoon [d]elete [4]' })
-      vim.keymap.set('n', '<leader>hd5', function()
-        harpoon:list():remove_at(5)
-      end, { desc = '[H]arpoon [d]elete [5]' })
-      vim.keymap.set('n', '<leader>hd6', function()
-        harpoon:list():remove_at(6)
-      end, { desc = '[H]arpoon [d]elete [6]' })
-      vim.keymap.set('n', '<leader>hd7', function()
-        harpoon:list():remove_at(7)
-      end, { desc = '[H]arpoon [d]elete [7]' })
-
-      vim.keymap.set('n', '<leader>hD', function()
-        harpoon:list():clear()
-      end, { desc = '[H]arpoon [D]elete all files' })
+      require('custom.plugins.harpoon').setup()
     end,
-  }, -- end of configuration
+  },
+
+  {
+    'lukas-reineke/indent-blankline.nvim',
+    main = 'ibl',
+    ---@module "ibl"
+    ---@type ibl.config
+    opts = {},
+  },
   {
     'goolord/alpha-nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
@@ -1231,7 +1215,6 @@ require('lazy').setup({
 --   end,
 -- })
 vim.api.nvim_set_hl(0, '@variable', { fg = '#FFD700' })
-
 --
 --
 --
