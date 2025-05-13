@@ -189,6 +189,25 @@ vim.opt.confirm = true
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
+
+vim.keymap.set('n', '<leader>sa', function()
+  -- Tüm dosyayı al
+  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+  -- Satırları birleştir ve + register'ına ekle
+  vim.fn.setreg('+', table.concat(lines, '\n'))
+  print 'File yanked to clipboard!'
+end, { desc = 'Yank the entire file to clipboard' })
+vim.keymap.set('n', '<leader>sp', function()
+  -- Clipboard'daki içeriği al
+  local clipboard_content = vim.fn.getreg '+'
+  -- Buffer'ı seç
+  local buf_lines = vim.api.nvim_buf_line_count(0)
+
+  -- Tüm buffer'ı güncelle
+  vim.api.nvim_buf_set_lines(0, 0, buf_lines, false, vim.split(clipboard_content, '\n'))
+  print 'Buffer replaced with clipboard content!'
+end, { desc = 'Replace buffer with clipboard content' })
+
 vim.keymap.set('n', '<A-j>', ':m .+1<CR>==', { noremap = true, silent = true })
 vim.keymap.set('n', '<A-k>', ':m .-2<CR>==', { noremap = true, silent = true })
 
