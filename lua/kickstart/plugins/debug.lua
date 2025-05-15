@@ -95,10 +95,11 @@ return {
     dap.adapters.cppdbg = {
       id = 'cppdbg',
       type = 'executable',
+      request = 'launch',
+      name = 'Launch file in externalTerminal',
       command = vim.fn.stdpath 'data' .. '/mason/bin/OpenDebugAD7',
-      options = {
-        detached = false,
-      },
+      program = '${file}',
+      console = 'externalTerminal',
     }
 
     dap.configurations.cpp = {

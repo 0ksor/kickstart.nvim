@@ -401,14 +401,6 @@ require('lazy').setup({
       require('custom.plugins.harpoon').setup()
     end,
   },
-
-  {
-    'lukas-reineke/indent-blankline.nvim',
-    main = 'ibl',
-    ---@module "ibl"
-    ---@type ibl.config
-    opts = {},
-  },
   {
     'goolord/alpha-nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
@@ -1185,7 +1177,7 @@ require('lazy').setup({
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
   require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
+  require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
   require 'kickstart.plugins.autopairs',
