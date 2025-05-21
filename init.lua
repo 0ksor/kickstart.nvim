@@ -210,16 +210,17 @@ vim.keymap.set('n', '<A-j>', ':m .+1<CR>==', { noremap = true, silent = true })
 vim.keymap.set('n', '<A-k>', ':m .-2<CR>==', { noremap = true, silent = true })
 
 vim.keymap.set('n', '<C-m>', '$', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-p>', '%', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-m>', '<Esc>A', { noremap = true, silent = true })
+
+vim.keymap.set('i', 'jj', '<Esc>j')
+vim.keymap.set('i', 'kk', '<Esc>k')
 
 vim.keymap.set('n', '<A-o>', 'o<Esc>', { noremap = true, silent = true }) -- Alt + o alt satır
 vim.keymap.set('n', '<A-O>', 'O<Esc>', { noremap = true, silent = true }) -- Alt + Shift + o üst satır
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-
--- Normal modda 's' tuşunu boş bırak
-vim.keymap.set('n', 's', '<Nop>', { desc = 'Disable s key' })
 
 -- terminal açmak için
 vim.keymap.set('n', '<leader>tt', function()
@@ -230,6 +231,11 @@ vim.keymap.set('n', '<leader>tt', function()
   -- shell'e gönder
   os.execute(cmd)
 end, { desc = 'Open tmux split in file directory' })
+
+vim.keymap.set('n', '<C-z>', function()
+  vim.cmd 'wa' -- tüm dosyaları kaydet
+  vim.api.nvim_feedkeys('\026', 'n', false) -- gerçek Ctrl-Z göndermek için: \026 = <C-z>
+end, { noremap = true, silent = true })
 
 --
 --
@@ -273,20 +279,6 @@ vim.keymap.set('n', '<leader>pm', function()
     vim.notify('platformio.ini not found!', vim.log.levels.ERROR)
   end
 end, { desc = 'Arduino [P]latformIO [M]on' })
-
--- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
--- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
--- is not what someone will guess without a bit more experience.
---
--- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
--- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
-
--- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -429,7 +421,7 @@ require('lazy').setup({
         },
         -- Label for the Section
         { type = 'text', val = 'Frequently Used Files', opts = { position = 'center', hl = 'Title' } },
-        dashboard.button('0', ' SDL sources', ':e ' .. vim.fn.expand '~/Projects/SDL_project/src' .. '<CR>'),
+        dashboard.button('t', ' Tockens', ':e ' .. vim.fn.expand '~/Desktop/tokens' .. '<CR>'),
         dashboard.button('1', ' Python game with a actuall', ':e ' .. vim.fn.expand '~/snake-game/' .. '<CR>'),
         dashboard.button('2', ' Arduino', ':e ' .. vim.fn.expand '~/ProjectArduino/test2/src/main.cpp' .. '<CR>'),
       }
@@ -853,8 +845,8 @@ require('lazy').setup({
       local servers = {
         clangd = {},
         -- gopls = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
+        pyright = {},
+        rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -1136,7 +1128,22 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'cpp', 'python' },
+      ensure_installed = {
+        'bash',
+        'c',
+        'rust',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
+        'cpp',
+        'python',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -1180,7 +1187,7 @@ require('lazy').setup({
   require 'kickstart.plugins.debug',
   require 'kickstart.plugins.indent_line',
   require 'kickstart.plugins.lint',
-  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.gitsigns',
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
 
@@ -1223,10 +1230,20 @@ require('lazy').setup({
 --     vim.lsp.buf.hover()
 --   end,
 -- })
-vim.api.nvim_set_hl(0, '@variable', { fg = '#FFD700' })
 --
 --
 --
---
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'python',
+  callback = function()
+    vim.api.nvim_set_hl(0, '@variable', { fg = '#5fafff' })
+  end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'cpp, c',
+  callback = function()
+    vim.api.nvim_set_hl(0, '@variable.parameter', { fg = '#2d82b7' })
+    vim.api.nvim_set_hl(0, '@variable', { fg = '#5fafff' })
+  end,
+})
