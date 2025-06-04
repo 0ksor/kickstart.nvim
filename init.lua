@@ -413,6 +413,7 @@ require('lazy').setup({
         dashboard.button('s', 'Search Text', ':Telescope live_grep<CR>'),
         dashboard.button('c', 'Config', ':e $MYVIMRC<CR>'),
         dashboard.button('q', 'Quit', ':qa<CR>'),
+        dashboard.button('C', 'i3 Config', ':e ' .. vim.fn.expand '~/.config/i3/config' .. '<CR>'),
         -- Separator Line
         {
           type = 'text',
@@ -422,8 +423,6 @@ require('lazy').setup({
         -- Label for the Section
         { type = 'text', val = 'Frequently Used Files', opts = { position = 'center', hl = 'Title' } },
         dashboard.button('t', ' Tockens', ':e ' .. vim.fn.expand '~/Desktop/tokens' .. '<CR>'),
-        dashboard.button('1', ' Python game with a actuall', ':e ' .. vim.fn.expand '~/snake-game/' .. '<CR>'),
-        dashboard.button('2', ' Arduino', ':e ' .. vim.fn.expand '~/ProjectArduino/test2/src/main.cpp' .. '<CR>'),
       }
       require('alpha').setup(dashboard.config)
     end,
