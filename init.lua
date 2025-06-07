@@ -422,7 +422,7 @@ require('lazy').setup({
         },
         -- Label for the Section
         { type = 'text', val = 'Frequently Used Files', opts = { position = 'center', hl = 'Title' } },
-        dashboard.button('t', ' Tockens', ':e ' .. vim.fn.expand '~/Desktop/tokens' .. '<CR>'),
+        dashboard.button('t', ' Tockens', ':e ' .. vim.fn.expand '~/tokens' .. '<CR>'),
       }
       require('alpha').setup(dashboard.config)
     end,
