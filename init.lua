@@ -351,7 +351,31 @@ require('lazy').setup({
     event = 'VeryLazy',
     opts = {},
   },
-
+  {
+    'nvim-orgmode/orgmode',
+    ft = 'org',
+    config = function()
+      require('orgmode').setup {}
+    end,
+  },
+  {
+    'lukas-reineke/headlines.nvim',
+    ft = { 'markdown', 'org', 'norg', 'asciidoc', 'tex' },
+    config = function()
+      require('headlines').setup {
+        org = {
+          enable = true,
+          markdown = true,
+          bold = true,
+          italic = true,
+          underline = true,
+          dash = '•',
+          fold_headlines = true, -- Başlık altını otomatik gizle
+        },
+        markdown = { enable = false }, -- Sadece org kullanıyorsan markdown kısmını kapatabilirsin
+      }
+    end,
+  },
   {
     'kawre/leetcode.nvim',
     event = 'VeryLazy',
