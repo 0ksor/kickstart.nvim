@@ -11,9 +11,7 @@
 ========         ||                    ||   |-----|          ========
 ========         ||:Tutor              ||   |:::::|          ========
 ========         |'-..................-'|   |____o|          ========
-========         `"")----------------(""`   ___________      ========
-========        /::::::::::|  |::::::::::\  \ no mouse \     ========
-========       /:::========|  |==hjkl==:::\  \ required \    ========
+========         `"")----------------(""`   ___________      ======== ========        /::::::::::|  |::::::::::\  \ no mouse \     ======== ========       /:::========|  |==hjkl==:::\  \ required \    ========
 ========      '""""""""""""'  '""""""""""""'  '""""""""""'   ========
 ========                                                     ========
 =====================================================================
@@ -385,7 +383,6 @@ require('lazy').setup({
       }
     end,
   },
-
   {
     'ThePrimeagen/harpoon',
     branch = 'harpoon2',
@@ -393,6 +390,18 @@ require('lazy').setup({
       require('custom.plugins.harpoon').setup()
     end,
   },
+  {
+    'renerocksai/telekasten.nvim',
+    dependencies = { 'nvim-telescope/telescope.nvim' },
+    config = function()
+      require('telekasten').setup {
+        home = vim.fn.expand '~/files/notes',
+        take_over_my_home = true,
+        auto_set_filetype = false,
+      }
+    end,
+  },
+
   {
     'goolord/alpha-nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
@@ -411,9 +420,10 @@ require('lazy').setup({
         dashboard.button('f', 'Find File', ':Telescope find_files<CR>'),
         dashboard.button('r', 'Recent Files', ':Telescope oldfiles<CR>'),
         dashboard.button('s', 'Search Text', ':Telescope live_grep<CR>'),
-        dashboard.button('c', 'Config', ':e $MYVIMRC<CR>'),
         dashboard.button('q', 'Quit', ':qa<CR>'),
+        dashboard.button('c', 'Config', ':e $MYVIMRC<CR>'),
         dashboard.button('C', 'i3 Config', ':e ' .. vim.fn.expand '~/.config/i3/config' .. '<CR>'),
+        dashboard.button('<C-C>', 'Composer Config', ':e ' .. vim.fn.expand '~/.config/picom/picom.conf' .. '<CR>'),
         -- Separator Line
         {
           type = 'text',
@@ -422,7 +432,7 @@ require('lazy').setup({
         },
         -- Label for the Section
         { type = 'text', val = 'Frequently Used Files', opts = { position = 'center', hl = 'Title' } },
-        dashboard.button('t', ' Tockens', ':e ' .. vim.fn.expand '~/tokens' .. '<CR>'),
+        dashboard.button('t', ' Tockens', ':e ' .. vim.fn.expand '~/.tokens' .. '<CR>'),
       }
       require('alpha').setup(dashboard.config)
     end,
@@ -579,7 +589,10 @@ require('lazy').setup({
         -- },
         -- pickers = {}
         defaults = {
+          hidden = true,
           file_ignore_patterns = {
+            '.cache',
+            'build/',
             'node_modules/',
             '%.git/',
             '%.jpg',
@@ -593,6 +606,11 @@ require('lazy').setup({
             '__pycache__/',
             '%.pyc$',
             'requirements.txt',
+          },
+        },
+        pickers = {
+          find_files = {
+            hidden = true,
           },
         },
         extensions = {
@@ -679,35 +697,6 @@ require('lazy').setup({
       'hrsh7th/cmp-nvim-lsp',
     },
     config = function()
-      -- Brief aside: **What is LSP?**
-      --
-      -- LSP is an initialism you've probably heard, but might not understand what it is.
-      --
-      -- LSP stands for Language Server Protocol. It's a protocol that helps editors
-      -- and language tooling communicate in a standardized fashion.
-      --
-      -- In general, you have a "server" which is some tool built to understand a particular
-      -- language (such as `gopls`, `lua_ls`, `rust_analyzer`, etc.). These Language Servers
-      -- (sometimes called LSP servers, but that's kind of like ATM Machine) are standalone
-      -- processes that communicate with some "client" - in this case, Neovim!
-      --
-      -- LSP provides Neovim with features like:
-      --  - Go to definition
-      --  - Find references
-      --  - Autocompletion
-      --  - Symbol Search
-      --  - and more!
-      --
-      -- Thus, Language Servers are external tools that must be installed separately from
-      -- Neovim. This is where `mason` and related plugins come into play.
-      --
-      -- If you're wondering about lsp vs treesitter, you can check out the wonderfully
-      -- and elegantly composed help section, `:help lsp-vs-treesitter`
-
-      --  This function gets run when an LSP attaches to a particular buffer.
-      --    That is to say, every time a new file is opened that is associated with
-      --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
-      --    function will be executed to configure the current buffer
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
@@ -863,15 +852,6 @@ require('lazy').setup({
         -- gopls = {},
         pyright = {},
         rust_analyzer = {},
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
-        --
-
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
