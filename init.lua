@@ -152,6 +152,8 @@ vim.keymap.set('n', '<C-z>', function()
   vim.api.nvim_feedkeys('\026', 'n', false) -- gerçek Ctrl-Z göndermek için: \026 = <C-z>
 end, { noremap = true, silent = true })
 
+vim.keymap.set('n', 'cc', '0D', { noremap = true, silent = true })
+
 --
 --
 --
