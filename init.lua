@@ -100,6 +100,25 @@ vim.opt.scrolloff = 10
 -- See `:help 'confirm'`
 vim.opt.confirm = true
 
+-- vimviki
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'vimwiki',
+  callback = function()
+    local key1 = vim.api.nvim_replace_termcodes('<Tab>', true, false, true)
+    local key2 = vim.api.nvim_replace_termcodes('<enter>', true, false, true)
+    for i = 1, 9 do
+      local key = 'g' .. i
+      local pattern = string.format([[^\s*%d\.]], i)
+      vim.keymap.set('n', key, function()
+        vim.fn.search(pattern)
+        vim.api.nvim_feedkeys(key1, 'm', false)
+        vim.api.nvim_feedkeys(key2, 'm', false)
+      end, { buffer = true })
+    end
+  end,
+})
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -262,6 +281,17 @@ require('lazy').setup({
   --        end,
   --    }
   --
+  -- lazy.nvim örneği
+  {
+    'vimwiki/vimwiki',
+    init = function()
+      vim.g.vimwiki_list = {
+        {
+          path = '~/vimwiki/',
+        },
+      }
+    end,
+  },
   {
     'chentoast/marks.nvim',
     event = 'VeryLazy',
