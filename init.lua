@@ -376,8 +376,6 @@ require('lazy').setup({
         dashboard.button('s', 'Search Text', ':Telescope live_grep<CR>'),
         dashboard.button('q', 'Quit', ':qa<CR>'),
         dashboard.button('c', 'Config', ':e $MYVIMRC<CR>'),
-        dashboard.button('C', 'i3 Config', ':e ' .. vim.fn.expand '~/.config/i3/config' .. '<CR>'),
-        dashboard.button('<C-C>', 'Composer Config', ':e ' .. vim.fn.expand '~/.config/picom/picom.conf' .. '<CR>'),
         {
           type = 'text',
           val = '──────────────────────────────',
