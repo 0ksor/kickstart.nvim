@@ -328,13 +328,44 @@ require('lazy').setup({
       }
     end,
   },
+
   {
     'ThePrimeagen/harpoon',
     branch = 'harpoon2',
+    dependencies = { 'nvim-lua/plenary.nvim' },
     config = function()
-      require('custom.plugins.harpoon').setup()
+      local harpoon = require 'harpoon'
+
+      harpoon:setup {
+        settings = {
+          save_on_toggle = false,
+          sync_on_ui_close = false,
+        },
+      }
+
+      vim.keymap.set('n', '<leader>a', function()
+        harpoon:list():add()
+      end)
+
+      vim.keymap.set('n', '<C-e>', function()
+        harpoon.ui:toggle_quick_menu(harpoon:list())
+      end)
+
+      vim.keymap.set('n', '<leader>1', function()
+        harpoon:list():select(1)
+      end)
+      vim.keymap.set('n', '<leader>2', function()
+        harpoon:list():select(2)
+      end)
+      vim.keymap.set('n', '<leader>3', function()
+        harpoon:list():select(3)
+      end)
+      vim.keymap.set('n', '<leader>4', function()
+        harpoon:list():select(4)
+      end)
     end,
   },
+
   {
     'renerocksai/telekasten.nvim',
     dependencies = { 'nvim-telescope/telescope.nvim' },
@@ -376,6 +407,7 @@ require('lazy').setup({
         dashboard.button('s', 'Search Text', ':Telescope live_grep<CR>'),
         dashboard.button('q', 'Quit', ':qa<CR>'),
         dashboard.button('c', 'Config', ':e $MYVIMRC<CR>'),
+        dashboard.button('C', 'Config', ':e' .. vim.fn.expand '~/.config/hypr/my_scripts.conf <CR>'),
         {
           type = 'text',
           val = '──────────────────────────────',
@@ -1140,18 +1172,6 @@ require('lazy').setup({
   require 'kickstart.plugins.gitsigns',
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
-
-  vim.keymap.set('n', '<leader>e', ':Neotree toggle<CR>', { noremap = true, silent = true }),
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    This is the easiest way to modularize your config.
-  --
-  --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
-  --
-  -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
-  -- Or use telescope!
-  -- In normal mode type `<space>sh` then write `lazy.nvim-plugin`
-  -- you can continue same window with `<space>sr` which resumes last telescope search
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
@@ -1183,12 +1203,12 @@ require('lazy').setup({
 --
 --
 --
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = 'python',
-  callback = function()
-    vim.api.nvim_set_hl(0, '@variable', { fg = '#5fafff' })
-  end,
-})
+-- vim.api.nvim_create_autocmd('FileType', {
+--   pattern = 'python',
+--   callback = function()
+--     vim.api.nvim_set_hl(0, '@variable', { fg = '#5fafff' })
+--   end,
+-- })
 
 vim.api.nvim_create_autocmd('FileType', {
   pattern = 'cpp, c',
