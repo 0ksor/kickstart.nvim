@@ -1,4 +1,3 @@
--- Set <space> as the leader key
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -17,7 +16,7 @@ vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
 --
---
+
 --
 vim.opt.relativenumber = true
 
@@ -27,18 +26,9 @@ vim.opt.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
--- Sync clipboard between OS and Neovim.
---  Schedule the setting after `UiEnter` because it can increase startup-time.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
---  ------------
--- vim.schedule(function()
--- vim.opt.clipboard = 'unnamedplus'
--- end)
---
---
---
---
+vim.keymap.set('n', 'x', '"_x')
+vim.keymap.set('n', 'X', '"_X')
+
 -- hop to the preious file
 local last_file = nil
 
@@ -94,10 +84,6 @@ vim.opt.cursorline = false
 
 vim.opt.scrolloff = 10
 
--- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
--- Minimal number of screen lines to keep above and below the cursor.
--- instead raise a dialog asking if you wish to save the current file(s)
--- See `:help 'confirm'`
 vim.opt.confirm = true
 
 -- vimviki
@@ -227,6 +213,7 @@ vim.keymap.set('n', '<leader>sF', ':FindHere<CR>', { desc = 'Find files non-recu
 -- Highlight when yanking (copying) text
 --  Try it with `yap` in normal mode
 --  See `:help vim.highlight.on_yank()`
+vim.keymap.set('n', 's', 's', { noremap = true, silent = true })
 
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
@@ -324,7 +311,7 @@ require('lazy').setup({
     },
     config = function()
       require('platformio').setup {
-        lsp = 'clang',
+        lsp = 'clangd',
       }
     end,
   },
@@ -338,8 +325,8 @@ require('lazy').setup({
 
       harpoon:setup {
         settings = {
-          save_on_toggle = false,
-          sync_on_ui_close = false,
+          save_on_toggle = true,
+          sync_on_ui_close = true,
         },
       }
 
@@ -362,6 +349,18 @@ require('lazy').setup({
       end)
       vim.keymap.set('n', '<leader>4', function()
         harpoon:list():select(4)
+      end)
+      vim.keymap.set('n', '<leader>5', function()
+        harpoon:list():select(5)
+      end)
+      vim.keymap.set('n', '<leader>6', function()
+        harpoon:list():select(6)
+      end)
+      vim.keymap.set('n', '<leader>7', function()
+        harpoon:list():select(7)
+      end)
+      vim.keymap.set('n', '<leader>8', function()
+        harpoon:list():select(8)
       end)
     end,
   },
@@ -414,7 +413,7 @@ require('lazy').setup({
           opts = { position = 'center', hl = 'Comment' },
         },
         { type = 'text', val = 'Frequently Used Files', opts = { position = 'center', hl = 'Title' } },
-        dashboard.button('t', ' Tockens', ':e ' .. vim.fn.expand '~/.tokens' .. '<CR>'),
+        dashboard.button('t', ' Tockens', ':e ' .. vim.fn.expand '~/.t' .. '<CR>'),
       }
 
       require('alpha').setup(dashboard.config)
@@ -451,7 +450,6 @@ require('lazy').setup({
   --
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
-
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
@@ -792,6 +790,7 @@ require('lazy').setup({
       -- See :help vim.diagnostic.Opts
       vim.diagnostic.config {
         severity_sort = true,
+        update_in_insert = true,
         float = { border = 'rounded', source = 'if_many' },
         underline = { severity = vim.diagnostic.severity.ERROR },
         signs = vim.g.have_nerd_font and {
@@ -923,6 +922,8 @@ require('lazy').setup({
         }
       end,
       formatters_by_ft = {
+        cpp = { 'clang-format' },
+        c = { 'clang-format' },
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
         python = { 'isort', 'black' },
@@ -1203,12 +1204,23 @@ require('lazy').setup({
 --
 --
 --
--- vim.api.nvim_create_autocmd('FileType', {
---   pattern = 'python',
---   callback = function()
---     vim.api.nvim_set_hl(0, '@variable', { fg = '#5fafff' })
---   end,
--- })
+
+-- Autosave
+vim.api.nvim_create_autocmd('BufLeave', {
+  pattern = { '*.cpp', '*.hpp', '*.c', '*.h', '*.py' },
+  callback = function()
+    if vim.bo.modified then
+      vim.cmd 'silent! write'
+    end
+  end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'python',
+  callback = function()
+    vim.api.nvim_set_hl(0, '@variable', { fg = '#E0AF86' })
+  end,
+})
 
 vim.api.nvim_create_autocmd('FileType', {
   pattern = 'cpp, c',

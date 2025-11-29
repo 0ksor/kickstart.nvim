@@ -5,7 +5,7 @@ return {
     'nvim-neotest/nvim-nio',
     'williamboman/mason.nvim',
     'jay-babu/mason-nvim-dap.nvim',
-    'leoluz/nvim-dap-go',
+    'theHamsta/nvim-dap-virtual-text',
   },
   keys = {
     {
@@ -55,73 +55,66 @@ return {
       function()
         require('dapui').toggle()
       end,
-      desc = 'Debug: See last session result.',
+      desc = 'Debug: Toggle UI',
     },
   },
   config = function()
     local dap = require 'dap'
-    local dapui = require 'dapui'
+    local ui = require 'dapui'
+    local dap_virtual_text = require 'nvim-dap-virtual-text'
 
-    require('mason-nvim-dap').setup {
-      automatic_installation = true,
-      ensure_installed = {
-        'delve', -- Go debugger
-        'cpptools', -- C++ debugger
+    -- Dap Virtual Text
+    dap_virtual_text.setup {}
+
+    -- codelldb adapter
+    dap.adapters.codelldb = {
+      type = 'server',
+      port = '${port}',
+      executable = {
+        command = vim.fn.stdpath 'data' .. '/mason/bin/codelldb',
+        args = { '--port', '${port}' },
       },
     }
 
-    dapui.setup {
-      icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
-      controls = {
-        icons = {
-          pause = '⏸',
-          play = '▶',
-          step_into = '⏎',
-          step_over = '⏭',
-          step_out = '⏮',
-          step_back = 'b',
-          run_last = '▶▶',
-          terminate = '⏹',
-          disconnect = '⏏',
-        },
+    -- Configurations
+    dap.configurations.rust = {
+      {
+        name = "Debug executable",
+        type = "codelldb",
+        request = "launch",
+        program = function()
+          -- Cargo build sonrası target/debug dizinindeki executable
+          local metadata_json = vim.fn.system('cargo metadata --format-version 1 --no-deps')
+          local metadata = vim.fn.json_decode(metadata_json)
+          local target_dir = metadata.target_directory
+          local default_exe = target_dir .. "/debug/" .. vim.fn.input("Executable name: ")
+          return vim.fn.input("Path to executable: ", default_exe, "file")
+        end,
+        cwd = "${workspaceFolder}",
+        stopOnEntry = false,
       },
-    }
-
-    dap.listeners.after.event_initialized['dapui_config'] = dapui.open
-    dap.listeners.before.event_terminated['dapui_config'] = dapui.close
-    dap.listeners.before.event_exited['dapui_config'] = dapui.close
-
-    -- C++ Debugger setup using GDB
-    dap.adapters.cppdbg = {
-      id = 'cppdbg',
-      type = 'executable',
-      request = 'launch',
-      name = 'Launch file in externalTerminal',
-      command = vim.fn.stdpath 'data' .. '/mason/bin/OpenDebugAD7',
-      program = '${file}',
-      console = 'externalTerminal',
     }
 
     dap.configurations.cpp = {
       {
-        name = 'Launch C++ Program',
-        type = 'cppdbg',
+        name = 'Launch file',
+        type = 'codelldb',
         request = 'launch',
         program = function()
           return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
         end,
         cwd = '${workspaceFolder}',
-        stopAtEntry = true,
-        setupCommands = {
-          {
-            description = 'Enable pretty printing',
-            text = '-enable-pretty-printing',
-            ignoreFailures = false,
-          },
-        },
-        MIMode = 'gdb',
-        miDebuggerPath = '/usr/bin/gdb', -- Make sure this is correct
+        stopOnEntry = false,
       },
     }
+    dap.configurations.c = dap.configurations.cpp
+
+    -- Dap UI
+    ui.setup()
+    vim.fn.sign_define('DapBreakpoint', { text = '🐞' })
+
+    dap.listeners.after.event_initialized['dapui_config'] = ui.open
+    dap.listeners.before.event_terminated['dapui_config'] = ui.close
+    dap.listeners.before.event_exited['dapui_config'] = ui.close
   end,
 }
