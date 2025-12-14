@@ -29,6 +29,16 @@ vim.opt.showmode = false
 vim.keymap.set('n', 'x', '"_x')
 vim.keymap.set('n', 'X', '"_X')
 
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'c,cpp',
+  callback = function()
+    vim.opt_local.expandtab = true
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.tabstop = 4
+    vim.opt_local.softtabstop = 4
+  end,
+})
+
 -- hop to the preious file
 local last_file = nil
 
@@ -46,6 +56,32 @@ vim.keymap.set('n', '<leader>v', function()
     vim.cmd('edit ' .. vim.g.prev_file)
   end
 end, { desc = '[B]ack to previous file' })
+
+-- o upgraded
+-- vim.keymap.set('n', 'o', function()
+--   local line = vim.api.nvim_get_current_line()
+--   local row = vim.api.nvim_win_get_cursor(0)[1]
+--
+--   if line:find '{' and not line:find '}' then
+--     vim.api.nvim_win_set_cursor(0, { row, line:find '{' })
+--   end
+--
+--   vim.api.nvim_feedkeys('o', 'n', false)
+-- end, { noremap = true, silent = true })
+
+vim.keymap.set('n', 'o', function()
+  local line = vim.api.nvim_get_current_line()
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+
+  local brace_col = line:find '{'
+  if line:match '^%s*{%s*}$' then
+    vim.api.nvim_win_set_cursor(0, { row, brace_col })
+    local keys = vim.api.nvim_replace_termcodes('i<CR>', true, false, true)
+    vim.api.nvim_feedkeys(keys, 'n', false)
+  else
+    vim.api.nvim_feedkeys('o', 'n', false)
+  end
+end, { noremap = true, silent = true })
 
 -- Enable break indent
 vim.opt.breakindent = true
@@ -248,7 +284,7 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  -- 'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
