@@ -17,7 +17,6 @@ vim.opt.number = true
 --  Experiment for yourself to see if you like it!
 --
 
---
 vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
@@ -74,10 +73,10 @@ vim.keymap.set('n', 'o', function()
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 
   local brace_col = line:find '{'
-  if line:match '^%s*{%s*}$' then
+  if line:match '{%}$' then
     vim.api.nvim_win_set_cursor(0, { row, brace_col })
-    local keys = vim.api.nvim_replace_termcodes('i<CR>', true, false, true)
-    vim.api.nvim_feedkeys(keys, 'n', false)
+    vim.cmd 'startinsert'
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<CR>', true, true, true), 'i', true)
   else
     vim.api.nvim_feedkeys('o', 'n', false)
   end

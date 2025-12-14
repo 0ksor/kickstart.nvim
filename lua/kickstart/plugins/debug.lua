@@ -79,18 +79,17 @@ return {
     -- Configurations
     dap.configurations.rust = {
       {
-        name = "Debug executable",
-        type = "codelldb",
-        request = "launch",
+        name = 'Debug executable',
+        type = 'codelldb',
+        request = 'launch',
         program = function()
-          -- Cargo build sonrası target/debug dizinindeki executable
-          local metadata_json = vim.fn.system('cargo metadata --format-version 1 --no-deps')
+          local metadata_json = vim.fn.system 'cargo metadata --format-version 1 --no-deps'
           local metadata = vim.fn.json_decode(metadata_json)
           local target_dir = metadata.target_directory
-          local default_exe = target_dir .. "/debug/" .. vim.fn.input("Executable name: ")
-          return vim.fn.input("Path to executable: ", default_exe, "file")
+          local default_exe = target_dir .. '/debug/' .. vim.fn.input 'Executable name: '
+          return vim.fn.input('Path to executable: ', default_exe, 'file')
         end,
-        cwd = "${workspaceFolder}",
+        cwd = '${workspaceFolder}',
         stopOnEntry = false,
       },
     }
