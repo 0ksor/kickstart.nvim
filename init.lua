@@ -1,33 +1,21 @@
---  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
--- See `:help mapleader`
---
--- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 
--- [[ Setting options ]]
--- See `:help vim.opt`
--- NOTE: You can change these options as you wish!
---  For more options, you can see `:help option-list`
-
--- Make line numbers default
 vim.opt.number = true
--- You can also add relative line numbers, to help with jumping.
---  Experiment for yourself to see if you like it!
---
-
 vim.opt.relativenumber = true
 vim.opt.virtualedit = 'all'
+vim.opt.swapfile = false
+vim.opt.backup = false
 
--- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
 
--- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
+vim.keymap.set('i', '<C-c', '<Esc>')
 vim.keymap.set('n', 'x', '"_x')
 vim.keymap.set('n', 'X', '"_X')
+vim.keymap.set('x', '<leader>rr', '"_dP')
 
 vim.api.nvim_create_autocmd('FileType', {
   pattern = 'c,cpp',
@@ -364,10 +352,10 @@ require('lazy').setup({
         harpoon.ui:toggle_quick_menu(harpoon:list())
       end)
 
-      vim.keymap.set('n', '<leader>1', function()
+      vim.keymap.set('n', '<C-1>', function()
         harpoon:list():select(1)
       end)
-      vim.keymap.set('n', '<leader>2', function()
+      vim.keymap.set('n', '<leder>2', function()
         harpoon:list():select(2)
       end)
       vim.keymap.set('n', '<leader>3', function()
@@ -963,7 +951,7 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          -- ['<Tab>'] = cmp.mapping.confirm { select = true },
+          ['<C-y>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
