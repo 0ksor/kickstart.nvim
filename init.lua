@@ -316,19 +316,21 @@ require('lazy').setup({
     lazy = false,
   },
 
-  {
-    'anurag3301/nvim-platformio.lua',
-    dependencies = {
-      { 'akinsho/nvim-toggleterm.lua' },
-      { 'nvim-telescope/telescope.nvim' },
-      { 'nvim-lua/plenary.nvim' },
-    },
-    config = function()
-      require('platformio').setup {
-        lsp = 'clangd',
-      }
-    end,
-  },
+  { 'RRethy/vim-hexokinase', lazy = false },
+
+  -- {
+  --   'anurag3301/nvim-platformio.lua',
+  --   dependencies = {
+  --     { 'akinsho/nvim-toggleterm.lua' },
+  --     { 'nvim-telescope/telescope.nvim' },
+  --     { 'nvim-lua/plenary.nvim' },
+  --   },
+  --   config = function()
+  --     require('platformio').setup {
+  --       lsp = 'clangd',
+  --     }
+  --   end,
+  -- },
 
   {
     'ThePrimeagen/harpoon',
@@ -417,7 +419,7 @@ require('lazy').setup({
         dashboard.button('f', 'Find File', ':Telescope find_files<CR>'),
         dashboard.button('F', 'Find Here (Non-recursive)', ':FindHere<CR>'),
         dashboard.button('r', 'Recent Files', ':Telescope oldfiles<CR>'),
-        dashboard.button('s', 'Search Text', ':Telescope live_grep<CR>'),
+        dashboard.button('g', 'Search Text', ':Telescope live_grep<CR>'),
         dashboard.button('q', 'Quit', ':qa<CR>'),
         dashboard.button('c', 'Config', ':e $MYVIMRC<CR>'),
         dashboard.button('C', 'Config', ':e' .. vim.fn.expand '~/.config/hypr/my_scripts.conf <CR>'),
@@ -788,6 +790,7 @@ require('lazy').setup({
           -- gopls = {},
           pyright = {},
           rust_analyzer = {},
+          asm_lsp = {},
           lua_ls = {
             -- cmd = { ... },
             -- filetypes = { ... },
