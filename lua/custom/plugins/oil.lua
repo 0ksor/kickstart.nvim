@@ -9,6 +9,7 @@ return {
       function()
         local oil = require 'oil'
         vim.g.oil_detail = not vim.g.oil_detail
+
         if vim.g.oil_detail then
           oil.set_columns { 'icon', 'permissions', 'size', 'mtime' }
         else
@@ -19,23 +20,22 @@ return {
     },
   },
 
-  dependencies = {
-    { 'echasnovski/mini.icons', opts = {} },
-  },
-
   config = function()
     --------------------------------------------------
     -- GIT STATUS CACHE
     --------------------------------------------------
+
     local function parse_output(proc)
       local result = proc:wait()
       local ret = {}
+
       if result.code == 0 then
         for line in vim.gsplit(result.stdout, '\n', { plain = true, trimempty = true }) do
           line = line:gsub('/$', '')
           ret[line] = true
         end
       end
+
       return ret
     end
 
@@ -59,27 +59,44 @@ return {
 
     local git_status = new_git_status()
 
-    -- refresh override
+    --------------------------------------------------
+    -- Refresh hook
+    --------------------------------------------------
+
     local refresh = require('oil.actions').refresh
-    local orig_refresh = refresh.callback
+    local orig = refresh.callback
+
     refresh.callback = function(...)
       git_status = new_git_status()
-      orig_refresh(...)
+      orig(...)
     end
 
     --------------------------------------------------
-    -- OIL SETUP
+    -- Setup
     --------------------------------------------------
+
     require('oil').setup {
       win_options = {
         signcolumn = 'yes:2',
       },
+
+      preview_win = {
+        update_on_cursor_moved = true,
+        preview_method = 'fast_scratch',
+        disable_preview = function(filename)
+          return vim.fn.getfsize(filename) > 1024 * 1024
+        end,
+      },
+
       delete_to_trash = true,
+
       lsp_file_methods = {
         enabled = true,
         timeout_ms = 1000,
         autosave_changes = true,
       },
+
+      use_default_keymaps = false,
 
       keymaps = {
         ['g?'] = { 'actions.show_help', mode = 'n' },
@@ -99,16 +116,20 @@ return {
         ['g\\'] = { 'actions.toggle_trash', mode = 'n' },
         ['<BS>'] = 'actions.parent',
       },
-      use_default_keymaps = false,
 
       view_options = {
         show_hidden = false,
 
         is_hidden_file = function(name, bufnr)
-          local dir = require('oil').get_current_dir(bufnr)
-          local is_dotfile = vim.startswith(name, '.') and name ~= '..'
+          local oil = require 'oil'
+          local dir = oil.get_current_dir(bufnr)
+          local is_dotfile = vim.startswith(name, '.')
 
           if not dir then
+            return is_dotfile
+          end
+
+          if not git_status[dir] then
             return is_dotfile
           end
 
