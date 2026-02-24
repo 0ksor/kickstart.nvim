@@ -65,8 +65,6 @@ require('lazy').setup({
   require 'custom.plugins.todo_comments',
   require 'custom.plugins.leetcode',
   require 'custom.plugins.oil',
-  require 'custom.plugins.oil_git_status',
-  require 'custom.plugins.oil_lsp',
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
