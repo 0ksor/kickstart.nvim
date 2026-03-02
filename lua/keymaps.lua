@@ -48,10 +48,10 @@ end, { desc = '[B]ack to previous file' })
 -- o upgraded
 vim.keymap.set('n', 'o', function()
   local line = vim.api.nvim_get_current_line()
-  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
 
   local brace_col = line:find '{'
-  if line:match '{%}$' then
+  if line:match '{%}' then
     vim.api.nvim_win_set_cursor(0, { row, brace_col })
     vim.cmd 'startinsert'
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<CR>', true, true, true), 'i', true)
@@ -160,6 +160,7 @@ vim.keymap.set('n', '<leader>sa', function()
   vim.fn.setreg('+', table.concat(lines, '\n'))
   print 'File yanked to clipboard!'
 end, { desc = 'Yank the entire file to clipboard' })
+
 vim.keymap.set('n', '<leader>sp', function()
   -- Clipboard'daki içeriği al
   local clipboard_content = vim.fn.getreg '+'
@@ -170,6 +171,8 @@ vim.keymap.set('n', '<leader>sp', function()
   vim.api.nvim_buf_set_lines(0, 0, buf_lines, false, vim.split(clipboard_content, '\n'))
   print 'Buffer replaced with clipboard content!'
 end, { desc = 'Replace buffer with clipboard content' })
+
+vim.keymap.set('v', '<leader>sp', '"_d"+P', { desc = 'Replace selection with clipboard' })
 
 vim.keymap.set('n', '<A-j>', ':m .+1<CR>==', { noremap = true, silent = true })
 vim.keymap.set('n', '<A-k>', ':m .-2<CR>==', { noremap = true, silent = true })
