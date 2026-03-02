@@ -12,7 +12,7 @@ vim.opt.mouse = 'a'
 
 vim.opt.showmode = false
 
-vim.keymap.set('i', '<C-c', '<Esc>')
+vim.keymap.set('i', '<C-c>', '<Esc>')
 vim.keymap.set('n', 'x', '"_x')
 vim.keymap.set('n', 'X', '"_X')
 vim.keymap.set('x', '<leader>rr', '"_dP')
@@ -267,4 +267,3 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.highlight.on_yank()
   end,
 })
-

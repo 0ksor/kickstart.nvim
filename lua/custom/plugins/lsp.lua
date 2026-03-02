@@ -1,10 +1,6 @@
 return {
-  -- Main LSP Configuration
   'neovim/nvim-lspconfig',
   dependencies = {
-    -- Automatically install LSPs and related tools to stdpath for Neovim
-    -- Mason must be loaded before its dependents so we need to set it up here.
-    -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
     { 'williamboman/mason.nvim', opts = {
       ensure_installed = {
         'codelldb',
@@ -90,6 +86,7 @@ return {
         --
         -- When you move your cursor, the highlights will be cleared (the second autocommand).
         local client = vim.lsp.get_client_by_id(event.data.client_id)
+
         if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
           local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
           vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
@@ -166,7 +163,41 @@ return {
         clangd = {},
         -- gopls = {},
         pyright = {},
-        rust_analyzer = {},
+        rust_analyzer = {
+          settings = {
+            ['rust-analyzer'] = {
+              lens = {
+                debug = {
+                  enable = true,
+                },
+                enable = true,
+                implementations = {
+                  enable = true,
+                },
+                references = {
+                  adt = {
+                    enable = true,
+                  },
+                  enumVariant = {
+                    enable = true,
+                  },
+                  method = {
+                    enable = true,
+                  },
+                  trait = {
+                    enable = true,
+                  },
+                },
+                run = {
+                  enable = true,
+                },
+                updateTest = {
+                  enable = true,
+                },
+              },
+            },
+          },
+        },
         asm_lsp = {},
         lua_ls = {
           -- cmd = { ... },

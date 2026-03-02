@@ -13,7 +13,6 @@ end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-
   {
     'chentoast/marks.nvim',
     event = 'VeryLazy',
@@ -27,29 +26,16 @@ require('lazy').setup({
 
   { 'RRethy/vim-hexokinase', lazy = false },
 
-  -- {
-  --   'anurag3301/nvim-platformio.lua',
-  --   dependencies = {
-  --     { 'akinsho/nvim-toggleterm.lua' },
-  --     { 'nvim-telescope/telescope.nvim' },
-  --     { 'nvim-lua/plenary.nvim' },
-  --   },
-  --   config = function()
-  --     require('platformio').setup {
-  --       lsp = 'clangd',
-  --     }
-  --   end,
-  -- },
-
   require 'kickstart.plugins.debug',
   require 'kickstart.plugins.indent_line',
   require 'kickstart.plugins.lint',
   require 'kickstart.plugins.gitsigns',
-  require 'kickstart.plugins.autopairs',
+  -- require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
 
   require 'custom.plugins.telescope',
   require 'custom.plugins.harpoon',
+  require 'custom.plugins.guess_indent',
   require 'custom.plugins.alpha',
   require 'custom.plugins.autocomplete',
   require 'custom.plugins.treesitter',
@@ -65,6 +51,8 @@ require('lazy').setup({
   require 'custom.plugins.todo_comments',
   require 'custom.plugins.leetcode',
   require 'custom.plugins.oil',
+  require 'custom.plugins.platformio',
+  require 'custom.plugins.sleuth',
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
