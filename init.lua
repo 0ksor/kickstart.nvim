@@ -42,6 +42,7 @@ require('lazy').setup({
   require 'custom.plugins.mininvim',
   require 'custom.plugins.lsp',
   require 'custom.plugins.autoformat',
+  require 'custom.plugins.sql_plugs',
   require 'custom.plugins.telekasten',
   require 'custom.plugins.gitsigns',
   require 'custom.plugins.which_key',

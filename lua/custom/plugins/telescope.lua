@@ -24,7 +24,9 @@ return { -- Fuzzy Finder (files, lsp, etc)
         file_ignore_patterns = {
           '*pico-sdk*',
           '.cache',
+          '.asm-lsp.toml',
           'build/',
+          '*.toml',
           'node_modules/',
           '%.git/',
           '%.jpg',

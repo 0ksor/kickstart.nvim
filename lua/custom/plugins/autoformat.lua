@@ -5,7 +5,7 @@ return { -- Autoformat
       cpp = { 'clang-format' },
       c = { 'clang-format' },
       lua = { 'stylua' },
-      python = { 'isort', 'black' },
+      python = { 'ruff' },
     },
     default_format_opts = {
       lsp_format = 'fallback',
